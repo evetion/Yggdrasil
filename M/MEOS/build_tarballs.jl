@@ -3,18 +3,18 @@
 using BinaryBuilder, Pkg
 
 name = "MEOS"
-version = v"1.1.1"
+version = v"1.2.0"
 
 # Collection of sources required to complete build
 sources = [
-    GitSource("https://github.com/MobilityDB/MobilityDB.git", "4273bdd4f70ee6fb8b28cd269385d83da6eeba31")
+    GitSource("https://github.com/MobilityDB/MobilityDB.git", "b5dfee7083beb85de772767971d52745f9b200ad")
 ]
 
 # Bash recipe for building across all platforms
 script = raw"""
 cd $WORKSPACE/srcdir/MobilityDB
 
-cmake -B build -DCMAKE_INSTALL_PREFIX=${prefix} -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TARGET_TOOLCHAIN} -DCMAKE_BUILD_TYPE=Release -DMEOS=ON
+cmake -B build -DCMAKE_INSTALL_PREFIX=${prefix} -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TARGET_TOOLCHAIN} -DCMAKE_BUILD_TYPE=Release -DMEOS=ON -DHAVE_X86_64_POPCNTQ_EXITCODE="FAILED_TO_RUN" -DHAVE_X86_64_POPCNTQ_EXITCODE__TRYRUN_OUTPUT=
 cmake --build build --parallel ${nproc}
 cmake --install build
 """
@@ -32,7 +32,7 @@ products = [
 dependencies = [
     Dependency(PackageSpec(name="GEOS_jll", uuid="d604d12d-fa86-5845-992e-78dc15976526"))
     Dependency(PackageSpec(name="JSON_C_jll", uuid="9cdfc4e7-e793-5089-b6f7-569a57a60f0a"))
-    Dependency(PackageSpec(name="Proj_jll", uuid="58948b4f-47e0-5654-a9ad-f609743f8632"))
+    Dependency(PackageSpec(name="PROJ_jll", uuid="58948b4f-47e0-5654-a9ad-f609743f8632"))
     Dependency(PackageSpec(name="GSL_jll", uuid="1b77fbbe-d8ee-58f0-85f9-836ddc23a7a4"); compat="~2.7.2")
 ]
 
