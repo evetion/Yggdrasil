@@ -30,7 +30,7 @@ cmake --install build
 platforms = expand_cxxstring_abis(supported_platforms())
 filter!(x -> arch(x) != "i686", platforms)  # __int128 not supported on i686
 filter!(x -> !startswith(arch(x), "armv"), platforms)  # __int128 not supported on armv
-
+filter!(!=(Platform("aarch64", "freebsd")), platforms)  # Misses most dependencies
 
 # The products that we will ensure are always built
 products = [
