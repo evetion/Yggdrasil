@@ -22,6 +22,9 @@ cmake --install build
 # These are the platforms we will build for by default, unless further
 # platforms are passed in on the command line
 platforms = expand_cxxstring_abis(supported_platforms())
+filter!(x -> arch(x) != "i686", platforms)  # __int128 not supported on i686
+filter!(x -> !startswith(arch(x), "armv"), platforms)  # __int128 not supported on armv
+
 
 # The products that we will ensure are always built
 products = [
