@@ -7,7 +7,7 @@ version = v"1.2.0"
 
 # Collection of sources required to complete build
 sources = [
-    GitSource("https://github.com/MobilityDB/MobilityDB.git", "b5dfee7083beb85de772767971d52745f9b200ad")
+    GitSource("https://github.com/MobilityDB/MobilityDB.git", "f4f32777d4b7a2ef32e7c52b3992330fe49418a4")
 ]
 
 # Bash recipe for building across all platforms
