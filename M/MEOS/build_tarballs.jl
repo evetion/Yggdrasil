@@ -5,7 +5,8 @@ using BinaryBuilder, Pkg
 name = "MEOS"
 version = v"1.2.0"
 
-# Collection of sources required to complete build
+# MEOS (Mobility Engine, Open Source) is a standalone C library and the core component of MobilityDB.
+# For further information, see https://libmeos.org
 sources = [
     GitSource("https://github.com/MobilityDB/MobilityDB.git", "60048b5b4b7ce2f7560c024d1af024db73b3bd5b")
 ]
