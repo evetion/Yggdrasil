@@ -6,7 +6,7 @@ name = "MEOS"
 version = v"1.2.0"
 
 # MEOS (Mobility Engine, Open Source) is a standalone C library and the core component of MobilityDB.
-# For further information, see https://libmeos.org
+# For further information, see https://libmeos.org.
 sources = [
     GitSource("https://github.com/MobilityDB/MobilityDB.git", "60048b5b4b7ce2f7560c024d1af024db73b3bd5b")
 ]
@@ -40,9 +40,9 @@ products = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
-    Dependency(PackageSpec(name="GEOS_jll", uuid="d604d12d-fa86-5845-992e-78dc15976526"))
+    Dependency(PackageSpec(name="GEOS_jll", uuid="d604d12d-fa86-5845-992e-78dc15976526"); compat="~3.9");
     Dependency(PackageSpec(name="JSON_C_jll", uuid="9cdfc4e7-e793-5089-b6f7-569a57a60f0a"))
-    Dependency(PackageSpec(name="PROJ_jll", uuid="58948b4f-47e0-5654-a9ad-f609743f8632"))
+    Dependency(PackageSpec(name="PROJ_jll", uuid="58948b4f-47e0-5654-a9ad-f609743f8632"); compat="~902.5");
     Dependency(PackageSpec(name="GSL_jll", uuid="1b77fbbe-d8ee-58f0-85f9-836ddc23a7a4"); compat="~2.7.2")
 ]
 
