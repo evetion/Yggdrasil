@@ -40,7 +40,7 @@ products = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
-    Dependency(PackageSpec(name="GEOS_jll", uuid="d604d12d-fa86-5845-992e-78dc15976526"); compat="^3.10");
+    Dependency(PackageSpec(name="GEOS_jll", uuid="d604d12d-fa86-5845-992e-78dc15976526"); compat="~3.13");
     Dependency(PackageSpec(name="JSON_C_jll", uuid="9cdfc4e7-e793-5089-b6f7-569a57a60f0a"))
     Dependency(PackageSpec(name="PROJ_jll", uuid="58948b4f-47e0-5654-a9ad-f609743f8632"); compat="~902.500");
     Dependency(PackageSpec(name="GSL_jll", uuid="1b77fbbe-d8ee-58f0-85f9-836ddc23a7a4"); compat="~2.7.2")
