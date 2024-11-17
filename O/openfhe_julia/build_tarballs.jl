@@ -8,12 +8,12 @@ uuid = Base.UUID("a83860b7-747b-57cf-bf1f-3e79990d037f")
 delete!(Pkg.Types.get_last_stdlibs(v"1.6.3"), uuid)
 
 name = "openfhe_julia"
-version = v"0.3.4"
+version = v"0.3.6"
 
 # Collection of sources required to complete build
 sources = [
     GitSource("https://github.com/hpsc-lab/openfhe-julia.git",
-              "92daa9c7661f242a3cf795a8b3fc315fdcdc5a84"),
+              "4939f1dd11ae2640b5bb397f731df8ef94307e74"),
 ]
 
 # Bash recipe for building across all platforms
@@ -62,9 +62,10 @@ platforms = vcat(libjulia_platforms.(julia_versions)...)
 # We cannot build with musl since OpenFHE requires the `execinfo.h` header for `backtrace`
 platforms = filter(p -> libc(p) != "musl", platforms)
 
-# PowerPC and 32-bit x86 platforms are not supported by OpenFHE
+# PowerPC and 32-bit x86 and 64-bit FreeBSD on ARM 64 platforms are not supported by OpenFHE
 platforms = filter(p -> arch(p) != "i686", platforms)
 platforms = filter(p -> arch(p) != "powerpc64le", platforms)
+platforms = filter(p -> !(Sys.isfreebsd(p) && arch(p) == "aarch64"), platforms)
 
 # Expand C++ string ABIs since we use std::string
 platforms = expand_cxxstring_abis(platforms)
@@ -79,7 +80,7 @@ products = [
 dependencies = [
     BuildDependency(PackageSpec(;name="libjulia_jll", version=v"1.10.9")),
     Dependency(PackageSpec(name="libcxxwrap_julia_jll", uuid="3eaa8342-bff7-56a5-9981-c04077f7cee7"); compat="0.13.0"),
-    Dependency(PackageSpec(name="OpenFHE_jll", uuid="a2687184-f17b-54bc-b2bb-b849352af807"); compat="1.2.0"),
+    Dependency(PackageSpec(name="OpenFHE_jll", uuid="a2687184-f17b-54bc-b2bb-b849352af807"); compat="1.2.3"),
     # For OpenMP we use libomp from `LLVMOpenMP_jll` where we use LLVM as compiler (BSD
     # systems), and libgomp from `CompilerSupportLibraries_jll` everywhere else.
     Dependency(PackageSpec(name="CompilerSupportLibraries_jll", uuid="e66e0078-7015-5450-92f7-15fbd957f2ae");
