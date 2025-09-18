@@ -3,24 +3,26 @@
 using BinaryBuilder, Pkg
 
 name = "Arrow"
-version = v"18.1.0"
+version = v"19.0.1"
 
 # Collection of sources required to complete build
 sources = [
-    GitSource("https://github.com/apache/arrow.git",
-              "6a0414bd9a91e890ec6a45369bf61f405180628c"),
+    ArchiveSource("https://github.com/apache/arrow/releases/download/apache-arrow-$version/apache-arrow-$version.tar.gz",
+                  "acb76266e8b0c2fbb7eb15d542fbb462a73b3fd1e32b80fad6c2fafd95a51160"),
     DirectorySource("bundled"),
 ]
 
 # Bash recipe for building across all platforms
 script = raw"""
+cd $WORKSPACE/srcdir/apache-arrow-*
 
-cd $WORKSPACE/srcdir/arrow
-
-# Set toolchain for building external deps
-for f in ${WORKSPACE}/srcdir/patches/*.patch; do
-    atomic_patch -p1 ${f}
-done
+atomic_patch -p1 ${WORKSPACE}/srcdir/patches/boost.patch
+atomic_patch -p1 ${WORKSPACE}/srcdir/patches/parquet.patch
+if [[ $target == *mingw32* ]]; then
+    # This hard-codes the name and location of the zstd library and
+    # must not be applied on other architectures
+    atomic_patch -p1 ${WORKSPACE}/srcdir/patches/windows-zstd.patch
+fi
 
 cd cpp
 
@@ -36,6 +38,7 @@ CMAKE_FLAGS=(
     -DARROW_DEPENDENCY_SOURCE=SYSTEM
     -DARROW_IPC=OFF
     -DARROW_JEMALLOC=OFF
+    -DARROW_MIMALLOC=OFF # We could turn this on when https://github.com/apache/arrow/pull/42090 is merged
     -DARROW_PARQUET=ON
     -DARROW_SIMD_LEVEL=NONE
     -DARROW_THRIFT_USE_SHARED=ON
@@ -48,10 +51,17 @@ CMAKE_FLAGS=(
     -DARROW_WITH_SNAPPY=ON
     -DARROW_WITH_UTF8PROC=OFF
     -DARROW_WITH_ZLIB=ON
-    -DARROW_WITH_ZSTD=OFF
+    -DARROW_WITH_ZSTD=ON
     -DPARQUET_BUILD_EXECUTABLES=OFF
     -Dxsimd_SOURCE=AUTO
 )
+
+if [[ $target == *mingw32* ]]; then
+    # Cmake doesn't find the zstd library on Windows. It does find
+    # zstd, but it somehow can't determine the path to the actual
+    # library.
+    CMAKE_FLAGS+=(-DZSTD_LIB="${prefix}/lib/libzstd.dll.a")
+fi
 
 cmake -B cmake-build "${CMAKE_FLAGS[@]}"
 cmake --build cmake-build --parallel ${nproc}
@@ -71,16 +81,17 @@ products = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
-    Dependency("Bzip2_jll"; compat="1.0.8"),
+    Dependency("Bzip2_jll"; compat="1.0.9"),
     Dependency("CompilerSupportLibraries_jll"; platforms=filter(!Sys.isbsd, platforms)),
     Dependency("Lz4_jll"),
-    Dependency("Thrift_jll"; compat="0.21"),
+    Dependency("Thrift_jll"; compat="0.21.1"),
     Dependency("Zlib_jll"),
-    Dependency("boost_jll"; compat="=1.79.0"),
-    Dependency("brotli_jll"; compat="1.1.0"),
-    Dependency("snappy_jll"; compat="1.2.1"),
+    Dependency("Zstd_jll"; compat="1.5.7"),
+    Dependency("boost_jll"; compat="=1.87.0"),
+    Dependency("brotli_jll"; compat="1.1.1"),
+    Dependency("snappy_jll"; compat="1.2.2"),
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
 build_tarballs(ARGS, name, version, sources, script, platforms, products, dependencies;
-               clang_use_lld=false, julia_compat="1.6", preferred_gcc_version=v"8")
+               clang_use_lld=false, julia_compat="1.6", preferred_gcc_version=v"11.1")
